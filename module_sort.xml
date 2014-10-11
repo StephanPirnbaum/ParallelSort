@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_sort" default="compile.module.sort">
+  <dirname property="module.sort.basedir" file="${ant.file.module_sort}"/>
+  
+  <property name="module.jdk.home.sort" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.sort" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.sort" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.sort" value="-encoding UTF-8 -source 8 ${compiler.args}"/>
+  
+  <property name="sort.output.dir" value="${module.sort.basedir}/out/production/Sort"/>
+  <property name="sort.testoutput.dir" value="${module.sort.basedir}/out/test/Sort"/>
+  
+  <path id="sort.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="sort.module.production.classpath">
+    <path refid="${module.jdk.classpath.sort}"/>
+    <pathelement location="${idea.home}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/hamcrest-library-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.11.jar"/>
+    <pathelement location="${idea.home}/lib/annotations.jar"/>
+  </path>
+  
+  <path id="sort.runtime.production.module.classpath">
+    <pathelement location="${sort.output.dir}"/>
+    <pathelement location="${idea.home}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/hamcrest-library-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.11.jar"/>
+    <pathelement location="${idea.home}/lib/annotations.jar"/>
+  </path>
+  
+  <path id="sort.module.classpath">
+    <path refid="${module.jdk.classpath.sort}"/>
+    <pathelement location="${sort.output.dir}"/>
+    <pathelement location="${idea.home}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/hamcrest-library-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.11.jar"/>
+    <pathelement location="${idea.home}/lib/annotations.jar"/>
+  </path>
+  
+  <path id="sort.runtime.module.classpath">
+    <pathelement location="${sort.testoutput.dir}"/>
+    <pathelement location="${sort.output.dir}"/>
+    <pathelement location="${idea.home}/lib/hamcrest-core-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/hamcrest-library-1.3.jar"/>
+    <pathelement location="${idea.home}/lib/junit-4.11.jar"/>
+    <pathelement location="${idea.home}/lib/annotations.jar"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.sort">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.sort">
+    <patternset refid="excluded.from.module.sort"/>
+  </patternset>
+  
+  <path id="sort.module.sourcepath">
+    <dirset dir="${module.sort.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.sort" depends="compile.module.sort.production,compile.module.sort.tests" description="Compile module Sort"/>
+  
+  <target name="compile.module.sort.production" depends="register.custom.compilers" description="Compile module Sort; production classes">
+    <mkdir dir="${sort.output.dir}"/>
+    <javac2 destdir="${sort.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.sort}/javac">
+      <compilerarg line="${compiler.args.sort}"/>
+      <bootclasspath refid="sort.module.bootclasspath"/>
+      <classpath refid="sort.module.production.classpath"/>
+      <src refid="sort.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.sort"/>
+    </javac2>
+    
+    <copy todir="${sort.output.dir}">
+      <fileset dir="${module.sort.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.sort.tests" depends="register.custom.compilers,compile.module.sort.production" description="compile module Sort; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.sort" description="cleanup module">
+    <delete dir="${sort.output.dir}"/>
+    <delete dir="${sort.testoutput.dir}"/>
+  </target>
+</project>
